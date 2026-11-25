@@ -6,7 +6,7 @@
 # Usage:
 #   bash scripts/check-security-headers.sh https://example.com
 #
-# Requirements: Bash, curl, OpenSSL
+# Requirements: Bash, curl
 # Only checks a URL supplied by the user.
 
 set -euo pipefail
@@ -23,7 +23,7 @@ if [[ ! "$URL" =~ ^https://[^/[:space:]]+(/[^[:space:]]*)?$ ]]; then
     exit 2
 fi
 
-for cmd in curl openssl; do
+for cmd in curl; do
     if ! command -v "$cmd" >/dev/null 2>&1; then
         echo "ERROR: Missing dependency: $cmd"
         exit 2
