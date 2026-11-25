@@ -1,0 +1,58 @@
+
+# Nginx Reverse Proxy & Web Security Lab
+# Example configuration for educational purposes.
+# Replace example.test and certificate paths before deployment.
+
+# HTTP -> HTTPS
+server {
+    listen 80;
+    server_name example.test;
+
+    return 301 https://$host$request_uri;
+}
+
+# HTTPS reverse proxy
+server {
+    listen 443 ssl;
+    server_name example.test;
+
+    # Example certificate paths - no private keys included
+    ssl_certificate     /etc/nginx/ssl/example.crt;
+    ssl_certificate_key /etc/nginx/ssl/example.key;
+
+    ssl_protocols TLSv1.2 TLSv1.3;
+
+    # HTTP security headers
+    add_header Strict-Transport-Security "max-age=300" always;
+    add_header X-Frame-Options "DENY" always;
+    add_header X-Content-Type-Options "nosniff" always;
+
+    add_header Content-Security-Policy
+        "default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'"
+        always;
+
+    # Application traffic: protected by rate limiting
+    location / {
+        limit_req zone=corgon_per_ip burst=10 nodelay;
+        limit_req_status 429;
+
+        proxy_pass http://127.0.0.1:8080;
+        proxy_http_version 1.1;
+
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Static files: excluded from application rate limiting
+    location ^~ /static/ {
+        proxy_pass http://127.0.0.1:8080;
+        proxy_http_version 1.1;
+
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
