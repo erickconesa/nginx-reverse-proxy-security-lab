@@ -113,6 +113,48 @@ Estas mediciones corresponden a un entorno de laboratorio. No representan un ens
 - Resolución de problemas de disponibilidad.
 - Pruebas funcionales y de rendimiento controladas.
 
+
+## Technical Evidence
+
+The following screenshots document real validation tests
+performed during the Nginx reverse proxy laboratory.
+
+All evidence has been sanitized to protect
+private infrastructure details.
+
+### 1. Reverse Proxy Validation
+
+Nginx configuration syntax successfully validated,
+Docker containers healthy and HTTPS returning HTTP 200.
+
+![Nginx Reverse Proxy Validation](evidence/01-reverse-proxy-validation.png)
+
+### 2. HTTP Security Headers
+
+Verification of HSTS, Content-Security-Policy,
+X-Frame-Options and X-Content-Type-Options.
+
+![HTTP Security Headers](evidence/02-security-headers.png)
+
+### 3. Rate Limiting — HTTP 429
+
+Final controlled ApacheBench test after correcting
+the configuration to exclude static resources.
+
+- Total requests: 40
+- Concurrency: 4
+- HTTP 200 responses: 14
+- HTTP 429 responses: 26
+- Test duration: 0.775 seconds
+
+![Nginx Rate Limiting Validation](evidence/03-rate-limiting.png)
+
+These tests were performed in a controlled laboratory.
+They do not represent production load testing or
+protection against distributed DDoS attacks.
+
+---
+
 ## Security and Privacy
 
 Las configuraciones compartidas en este repositorio son ejemplos saneados para fines educativos.
