@@ -1,0 +1,31 @@
+
+# Nginx Rate Limiting - CORGON ASIR Lab
+#
+# Educational configuration example.
+# Based on the rate limiting implementation tested
+# during the ASIR infrastructure lab.
+#
+# Place this directive inside the Nginx http context.
+# For example: /etc/nginx/conf.d/rate-limit.conf
+#
+# This file complements reverse-proxy.conf.example.
+
+# Shared memory zone: 1 MiB
+# Client identification: IP address
+# Nominal rate: 5 requests per second
+
+limit_req_zone $binary_remote_addr
+    zone=corgon_per_ip:1m
+    rate=5r/s;
+
+# The corresponding virtual host uses:
+#
+# limit_req zone=corgon_per_ip burst=10 nodelay;
+# limit_req_status 429;
+#
+# IMPORTANT:
+# Apply these directives inside location /.
+# Do not apply this limit to location ^~ /static/.
+#
+# This avoids false HTTP 429 responses for
+# legitimate CSS, JavaScript and image requests.
